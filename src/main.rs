@@ -16,20 +16,25 @@ use {
 
 
 fn main() {
-    // Process config
-
-    // TODO parse command line args
+    // Parse command line args
     let args = App::new("Picosplit")
+        // Load meta info from cargo
        .version(crate_version!())
-       .about("Minimalist speedrun timer")
        .author(crate_authors!())
-       .arg(Arg::with_name("cfg_dir")
+       // Set manual meta info
+       .about("Minimalist speedrun timer")
+
+       // Config path arg
+       .arg(Arg::with_name("cfg-dir")
             .short("cfg")
             .long("cfg-dir")
             .value_name("FILE")
             .default_value("./res/cfg/cfg.toml")
-            .help("Sets a path to load custom configuration file from")
+            .help("Sets a path to load configuration file from")
             .takes_value(true))
+
+        // TODO Width arg
+        // TODO Height arg
        .get_matches(); 
 
     // Build application window window.
