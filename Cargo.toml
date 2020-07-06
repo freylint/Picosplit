@@ -1,0 +1,11 @@
+[package]
+name = "picosplit"
+version = "0.1.0"
+authors = ["Freyja Valkyrie"]
+edition = "2018"
+
+
+
+[dependencies.conrod]
+version = "0.53.0"
+features = ["glium", "winit"]
