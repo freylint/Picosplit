@@ -5,6 +5,12 @@ authors = ["Freyja Valkyrie"]
 edition = "2018"
 
 
+[dependencies]
+toml = "0.5"
+
+[dependencies.clap]
+version = "2.33"
+default-features = false
 
 [dependencies.conrod]
 version = "0.53.0"
