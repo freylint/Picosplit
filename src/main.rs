@@ -36,6 +36,9 @@ fn main() {
         // TODO Width arg
         // TODO Height arg
         .get_matches();
+    
+    // TODO Parse CL args to config
+
 
     // Build application window window.
     let display = glium::glutin::WindowBuilder::new()
