@@ -2,6 +2,7 @@
 //! Minimalist speedrun timer
 
 mod cfg;
+mod cli;
 
 use {
     clap::{crate_authors, crate_version, App, Arg},
@@ -17,27 +18,14 @@ use {
 
 fn main() {
     // Parse command line args
-    let args = App::new("Picosplit")
-        // Load meta info from cargo
-        .version(crate_version!())
-        .author(crate_authors!())
-        // Set manual meta info
-        .about("Minimalist speedrun timer")
-        // Config path arg
-        .arg(
-            Arg::with_name("cfg-dir")
-                .short("cfg")
-                .long("cfg-dir")
-                .value_name("FILE")
-                .default_value("./res/cfg/cfg.toml")
-                .help("Sets a path to load configuration file from")
-                .takes_value(true),
-        )
-        // TODO Width arg
-        // TODO Height arg
-        .get_matches();
+    let cli_argfile = load_yaml!("./res/sys/cli.yml");
+    let matches = App::from(cli_argfile).get_matches();
+
+    // Process command line arguments
+    match matches {
+
+    }
     
-    // TODO Parse CL args to config
 
 
     // Build application window window.
