@@ -1,46 +1,33 @@
-#![deny(missing_docs, clippy::all)]
+#![deny(missing_debug_implementations, missing_docs, clippy::all)]
 //! Minimalist speedrun timer
 
 mod cfg;
-mod cli;
 
 use {
-    clap::{crate_authors, crate_version, App, Arg},
-    conrod::{
-        backend::glium::{
-            glium,
-            glium::{DisplayBuild, Surface},
-        },
-        color, widget, Colorable, Positionable, Widget,
-    },
+    orbtk::prelude::*,
+    std::path::Path,
+    clap::{App, load_yaml},
     toml::{Deserializer, Serializer},
+    cfg::Cfg,
 };
 
 fn main() {
     // Parse command line args
-    let cli_argfile = load_yaml!("./res/sys/cli.yml");
+    let cli_argfile = load_yaml!("../res/sys/cli.yaml");
     let matches = App::from(cli_argfile).get_matches();
 
-    // Process command line arguments
-    match matches {
+    let cfg = Cfg::init_cfg(Path::new("./res/cfg/cfg.toml"));
 
-    }
-    
-
-
-    // Build application window window.
-    let display = glium::glutin::WindowBuilder::new()
-        //.with_vsync()
-        .with_dimensions(400, 600)
-        .with_title("PicoSplit")
-        .with_decorations(false)
-        //.with_multisampling(4)
-        .build_glium()
-        .unwrap();
-
-    // Construct UI
-    // FIXME load from cfg
-    let mut ui = conrod::UiBuilder::new([400.0, 600.0]).build();
+    Application::new()
+    .window(|ctx| {
+        Window::create()
+            .title("OrbTk - minimal example")
+            .position((100.0, 100.0))
+            .size(420.0, 730.0)
+            .child(TextBlock::create().text("OrbTk").build(ctx))
+            .build(ctx)
+    })
+    .run();
 
     println!("Hello, world!");
 }

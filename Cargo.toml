@@ -9,11 +9,9 @@ edition = "2018"
 serde = { version = "1.0", features = ["derive"] }
 toml = "0.5"
 ron = "0.6"
+orbtk = "0.3.1-alpha2"
 
 [dependencies.clap]
 version = "2.33"
 default-features = false
-
-[dependencies.conrod]
-version = "0.53.0"
-features = ["glium", "winit"]
+features = ["yaml"]
