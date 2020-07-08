@@ -8,22 +8,20 @@ about: Minimalist speedrun timer
 args:
 # Config file CVARS
     - cfg-dir:
-        short: cd
         long: cfg-dir
         value_name: FILE
         default_value: ./res/cfg/cfg.toml
-        about: Sets a custom config file
+        help: Sets a custom config file
         takes_value: true
     - cfg-reset:
-        short: cr
         long: cfg-reset
         value_name: BOOL
-        default_value: false
-        about: Reset active config
+        default_value: "false"
+        help: Reset active config
         takes_value: true
     - set-resolution:
-        short: res
+        short: r
         long: set-resolution
         value_name: INT INT
-        about: Sets resolution of window
+        help: Sets resolution of window
         takes_value: true
