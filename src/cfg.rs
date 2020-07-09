@@ -65,10 +65,10 @@ impl Cfg {
         // Read file into buffer
         let mut buffer = Vec::new();
         match file.read(&mut *buffer) {
-            Ok(_msg) => {},
-            Err(msg) => {
+            Ok(_size) => {},
+            Err(err) => {
                 print!("Failed to read cfg file into buffer");
-                panic!(msg)
+                panic!(err)
             }
         }
 
