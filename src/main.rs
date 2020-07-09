@@ -7,7 +7,6 @@ use {
     orbtk::prelude::*,
     std::path::Path,
     clap::{App, load_yaml},
-    toml::{Deserializer, Serializer},
     cfg::Cfg,
 };
 
@@ -16,12 +15,12 @@ fn main() {
     let cli_argfile = load_yaml!("../res/sys/cli.yaml");
     let matches = App::from(cli_argfile).get_matches();
 
-    let cfg = Cfg::init_cfg(Path::new("./res/cfg/cfg.toml"));
+    let _cfg = Cfg::init_cfg(Path::new("./res/cfg/cfg.toml"));
 
     Application::new()
     .window(|ctx| {
         Window::create()
-            .title("OrbTk - minimal example")
+            .title("PicoSplit")
             .position((100.0, 100.0))
             .size(420.0, 730.0)
             .child(TextBlock::create().text("OrbTk").build(ctx))
