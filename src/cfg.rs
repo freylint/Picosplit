@@ -7,17 +7,17 @@ use {
 
 /// Struct containing application configuration data
 #[derive(Debug, Serialize, Deserialize)]
-pub struct Cfg<'a> {
-    title: &'a str,
+pub struct Cfg {
+    title: String,
     width: u32,
     height: u32,
 }
 
-impl<'a> Cfg<'a> {
+impl Cfg {
     /// Create Cfg from given data
     pub fn new(title: &'static str, width: u32, height: u32) -> Self {
         Cfg {
-            title,
+            title: title.to_owned(),
             width,
             height,
         }
@@ -28,18 +28,20 @@ impl<'a> Cfg<'a> {
         Self::new("PicoSplit", 400, 600)
     }
 
-    pub fn init_cfg(cfg_path: &Path) -> Self {
+    pub fn init_cfg(cfg_path: &Path) -> Box<Self> {
+        let mut config = Cfg::default();
         // Check to see if config exists
         if cfg_path.exists() {
             // Load config
-            Self::read(cfg_path)
+            config = *Self::read(cfg_path);
+
+            // Return heap allocated Cfg instance
+            return Box::new(config);
         } else {
-            // Create default config
-            let config = Self::default();
             // Write config to disk
             match Self::write(cfg_path, &config) {
                 // Return config
-                Ok(_count) => config,
+                Ok(_count) => Box::new(config),
                 Err(e) => {
                     println!("Failed to write default config.");
                     panic!(e)
@@ -50,7 +52,7 @@ impl<'a> Cfg<'a> {
     }
 
     /// Read Cfg config from file
-    pub fn read(path: &Path) -> Self {
+    pub fn read(path: &Path) -> Box<Self> {
         // Open file
         let mut file = match File::open(path) {
             Ok(file) => file,
@@ -61,20 +63,23 @@ impl<'a> Cfg<'a> {
         };
 
         // Read file into buffer
-        let mut buffer = String::new();
-        file.read_to_string(&mut buffer);
-
-        let mut data = String::new();
-        String::clone_from(&mut data, & buffer);
+        let mut buffer = Vec::new();
+        match file.read(&mut *buffer) {
+            Ok(_msg) => {},
+            Err(msg) => {
+                print!("Failed to read cfg file into buffer");
+                panic!(msg)
+            }
+        }
 
         // Deserialize Cfg
-        match toml::from_str(data.as_str()) {
+        Box::new(match toml::from_slice(&buffer) {
             Ok(config) => config,
             Err(err) => {
                 println!("Failed to deserialize user config.");
                 panic!(err)
             }
-        }
+        })
     }
 
     /// Writes a config to file
