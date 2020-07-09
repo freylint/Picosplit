@@ -2,7 +2,7 @@
 
 use {
     serde::{Deserialize, Serialize},
-    std::{path::Path,fs::File, io::prelude::*},
+    std::{fs::File, io::prelude::*, path::Path},
 };
 
 /// Struct containing application configuration data
@@ -45,16 +45,15 @@ impl Cfg {
                 Err(e) => {
                     println!("Failed to write default config.");
                     panic!(e)
-                },
+                }
             }
         }
-
     }
 
     /// Read Cfg config from file
     pub fn read(path: &Path) -> Box<Self> {
-        // Open file
         if path.exists() {
+            // Open file
             let mut file = match File::open(path) {
                 Ok(file) => file,
                 Err(err) => {
@@ -66,7 +65,7 @@ impl Cfg {
             // Read file into buffer
             let mut buffer = Vec::new();
             match file.read(&mut *buffer) {
-                Ok(_size) => {},
+                Ok(_size) => {}
                 Err(err) => {
                     print!("Failed to read cfg file into buffer");
                     panic!(err)

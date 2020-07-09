@@ -4,10 +4,10 @@
 mod cfg;
 
 use {
+    cfg::Cfg,
+    clap::{load_yaml, App},
     orbtk::prelude::*,
     std::path::Path,
-    clap::{App, load_yaml},
-    cfg::Cfg,
 };
 
 fn main() {
@@ -18,15 +18,15 @@ fn main() {
     let _cfg = Cfg::init_cfg(Path::new("./res/cfg/cfg.toml"));
 
     Application::new()
-    .window(|ctx| {
-        Window::create()
-            .title("PicoSplit")
-            .position((100.0, 100.0))
-            .size(420.0, 730.0)
-            .child(TextBlock::create().text("OrbTk").build(ctx))
-            .build(ctx)
-    })
-    .run();
+        .window(|ctx| {
+            Window::create()
+                .title("PicoSplit")
+                .position((100.0, 100.0))
+                .size(420.0, 730.0)
+                .child(TextBlock::create().text("OrbTk").build(ctx))
+                .build(ctx)
+        })
+        .run();
 
     println!("Hello, world!");
 }
