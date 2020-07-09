@@ -15,7 +15,7 @@ pub struct Cfg {
 
 impl Cfg {
     /// Create Cfg from given data
-    pub fn new(title: &'static str, width: u32, height: u32) -> Self {
+    pub fn new(title: &str, width: u32, height: u32) -> Self {
         Cfg {
             title: title.to_owned(),
             width,
@@ -52,37 +52,15 @@ impl Cfg {
 
     /// Read Cfg config from file
     pub fn read(path: &Path) -> Box<Self> {
-        if path.exists() {
-            // Open file
-            let mut file = match File::open(path) {
-                Ok(file) => file,
-                Err(err) => {
-                    println!("Failed to open config file for reading.");
-                    panic!(err)
-                }
-            };
+        // Open file
+        let mut file = File::open(path).expect("Failed to open file for deserializing cfg.");
 
-            // Read file into buffer
-            let mut buffer = Vec::new();
-            match file.read(&mut *buffer) {
-                Ok(_size) => {}
-                Err(err) => {
-                    print!("Failed to read cfg file into buffer");
-                    panic!(err)
-                }
-            };
+        // Read file into buffer
+        let mut buffer = Vec::new();
+        file.read_to_end(&mut buffer).expect("Failed to read cfg file into buffer");
 
-            // Deserialize Cfg
-            Box::new(match toml::from_slice(&buffer) {
-                Ok(config) => config,
-                Err(err) => {
-                    println!("Failed to deserialize user config.");
-                    panic!(err)
-                }
-            })
-        } else {
-            panic!("No cofig file at given path.")
-        }
+        // Deserialize Cfg
+        Box::new(toml::from_slice(&buffer).expect("Failed to deserialize cfg data"))
     }
 
     /// Writes a config to file
