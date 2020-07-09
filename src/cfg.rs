@@ -8,9 +8,9 @@ use {
 /// Struct containing application configuration data
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Cfg {
-    title: String,
-    width: u32,
-    height: u32,
+    pub title: String,
+    pub width: u32,
+    pub height: u32,
 }
 
 impl Cfg {
@@ -54,32 +54,36 @@ impl Cfg {
     /// Read Cfg config from file
     pub fn read(path: &Path) -> Box<Self> {
         // Open file
-        let mut file = match File::open(path) {
-            Ok(file) => file,
-            Err(err) => {
-                println!("Failed to open config file for reading.");
-                panic!(err)
-            }
-        };
+        if path.exists() {
+            let mut file = match File::open(path) {
+                Ok(file) => file,
+                Err(err) => {
+                    println!("Failed to open config file for reading.");
+                    panic!(err)
+                }
+            };
 
-        // Read file into buffer
-        let mut buffer = Vec::new();
-        match file.read(&mut *buffer) {
-            Ok(_size) => {},
-            Err(err) => {
-                print!("Failed to read cfg file into buffer");
-                panic!(err)
-            }
+            // Read file into buffer
+            let mut buffer = Vec::new();
+            match file.read(&mut *buffer) {
+                Ok(_size) => {},
+                Err(err) => {
+                    print!("Failed to read cfg file into buffer");
+                    panic!(err)
+                }
+            };
+
+            // Deserialize Cfg
+            Box::new(match toml::from_slice(&buffer) {
+                Ok(config) => config,
+                Err(err) => {
+                    println!("Failed to deserialize user config.");
+                    panic!(err)
+                }
+            })
+        } else {
+            panic!("No cofig file at given path.")
         }
-
-        // Deserialize Cfg
-        Box::new(match toml::from_slice(&buffer) {
-            Ok(config) => config,
-            Err(err) => {
-                println!("Failed to deserialize user config.");
-                panic!(err)
-            }
-        })
     }
 
     /// Writes a config to file
