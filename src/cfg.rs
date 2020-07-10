@@ -29,22 +29,20 @@ impl Cfg {
     }
 
     pub fn init_cfg(cfg_path: &Path) -> Box<Self> {
-        let mut config = Cfg::default();
+        let config = Cfg::default();
         // Check to see if config exists
         if cfg_path.exists() {
             // Load config
-            config = *Self::read(cfg_path);
-
-            // Return heap allocated Cfg instance
-            return Box::new(config);
+            Box::new(*Self::read(cfg_path))
         } else {
             // Write config to disk
             match Self::write(cfg_path, &config) {
                 // Return config
                 Ok(_count) => Box::new(config),
                 Err(e) => {
+                    // Fixme handle as a warning
                     println!("Failed to write default config.");
-                    panic!(e)
+                    Box::new(config)
                 }
             }
         }
