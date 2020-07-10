@@ -13,7 +13,7 @@ use {
 fn main() {
     // Parse command line args
     let cli_argfile = load_yaml!("../res/sys/cli.yaml");
-    let matches = App::from(cli_argfile).get_matches();
+    let _matches = App::from(cli_argfile).get_matches();
 
     let _cfg = Cfg::init_cfg(Path::new("./res/cfg/cfg.toml"));
 
@@ -21,7 +21,8 @@ fn main() {
         .window(|ctx| {
             Window::create()
                 .title("PicoSplit")
-                .position((100.0, 100.0))
+                // Commented out so that window manager handles initial pos
+                //.position((100.0, 100.0))
                 .size(420.0, 730.0)
                 .child(TextBlock::create().text("OrbTk").build(ctx))
                 .build(ctx)
