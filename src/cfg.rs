@@ -55,7 +55,8 @@ impl Cfg {
 
         // Read file into buffer
         let mut buffer = Vec::new();
-        file.read_to_end(&mut buffer).expect("Failed to read cfg file into buffer");
+        file.read_to_end(&mut buffer)
+            .expect("Failed to read cfg file into buffer");
 
         // Deserialize Cfg
         Box::new(toml::from_slice(&buffer).expect("Failed to deserialize cfg data"))
