@@ -2,12 +2,12 @@
 //! Minimalist speedrun timer
 
 mod cfg;
-mod graphics;
+mod gfx;
 
 use {
     cfg::Cfg,
     clap::{load_yaml, App},
-    graphics::init_vk_window,
+    gfx::{init_vk_window, print_vk_ques},
     std::path::Path,
     vulkano::{
         buffer::{BufferUsage, CpuAccessibleBuffer},
@@ -38,21 +38,15 @@ fn main() {
         Instance::new(None, &extensions, None).expect("failed to create Vulkan instance")
     };
 
-    // Setup vulkan window
+    // Setup vulkan
     let (events_loop, surface) = init_vk_window(&EventLoop::new(), instance.clone());
 
-    // TODO allow user to select device
+    // Get vk physical
     let physical = PhysicalDevice::enumerate(&instance)
         .next()
         .expect("No device available");
 
-    // List ques
-    for family in physical.queue_families() {
-        println!(
-            "Found a queue family with {:?} queue(s)",
-            family.queues_count()
-        );
-    }
+    print_vk_ques(&physical);
 
     // Get que family that supports Graphics
     let queue_family = physical
