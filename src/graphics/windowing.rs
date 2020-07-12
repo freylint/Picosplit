@@ -1,11 +1,8 @@
 use {
     std::sync::Arc,
-    vulkano::{
-        instance::Instance,
-        swapchain::{Surface},
-    },
+    vulkano::{instance::Instance, swapchain::Surface},
     vulkano_win::VkSurfaceBuild,
-    winit::{window::Window, event_loop::EventLoop, window::WindowBuilder},
+    winit::{event_loop::EventLoop, window::Window, window::WindowBuilder},
 };
 
 pub fn init_vk_window(
