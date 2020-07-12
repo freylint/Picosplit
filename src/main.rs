@@ -7,7 +7,7 @@ mod gfx;
 use {
     cfg::Cfg,
     clap::{load_yaml, App},
-    gfx::{shaders, util},
+    gfx::{psapp::PSApp, shaders},
     std::{path::Path, sync::Arc},
     vulkano::{
         buffer::{BufferUsage, CpuAccessibleBuffer},
@@ -30,7 +30,7 @@ fn main() {
     let cfg = Cfg::init_cfg(Path::new("./res/cfg/cfg.toml"));
 
     // Setup vulkan window
-    let mut app = util::PSApp::init(&cfg);
+    let mut app = PSApp::init(&cfg);
 
     // Get Queue to render to
     let queue = app.queues.next().unwrap();
