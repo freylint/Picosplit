@@ -17,7 +17,11 @@ use {
         sync::GpuFuture,
     },
     vulkano_win::VkSurfaceBuild,
-    winit::{event_loop::EventLoop, window::WindowBuilder},
+    winit::{
+        event::{Event, WindowEvent},
+        event_loop::{ControlFlow, EventLoop},
+        window::WindowBuilder,
+    },
 };
 
 fn main() {
@@ -27,22 +31,15 @@ fn main() {
 
     let _cfg = Cfg::init_cfg(Path::new("./res/cfg/cfg.toml"));
 
-    let events_loop = EventLoop::new();
-
     // Create Vulkano Instance
     // TODO Nicer no vulkan output
-    let instance =
-        Instance::new(None, &InstanceExtensions::none(), None).expect("Failed to create instance");
+    let instance = {
+        let extensions = vulkano_win::required_extensions();
+        Instance::new(None, &extensions, None).expect("failed to create Vulkan instance")
+    };
 
     // Setup vulkan window
-    //let (event_loop, surface) = init_vk_window(&EventLoop::new(), instance.clone());
-
-    
-    let event_loop = EventLoop::new();
-    let surface = WindowBuilder::new()
-        .build_vk_surface(&events_loop, instance.clone())
-        .expect("Failed to create Vulkan window");
-    
+    let (events_loop, surface) = init_vk_window(&EventLoop::new(), instance.clone());
 
     // TODO allow user to select device
     let physical = PhysicalDevice::enumerate(&instance)
@@ -104,18 +101,15 @@ fn main() {
         .wait(None)
         .unwrap();
 
-    /*
-    // Enter main loop
-    event_loop.run(move |event, _, control_flow| {
-        *control_flow = ControlFlow::Wait;
-
-        match event {
-            Event::WindowEvent {
-                event: WindowEvent::CloseRequested,
-                window_id,
-            } if window_id == window.id() => *control_flow = ControlFlow::Exit,
-            _ => (),
+    // Main program loop
+    #[allow(clippy::single_match)]
+    events_loop.run(|event, _, control_flow| match event {
+        Event::WindowEvent {
+            event: WindowEvent::CloseRequested,
+            ..
+        } => {
+            *control_flow = ControlFlow::Exit;
         }
+        _ => (),
     });
-    */
 }
