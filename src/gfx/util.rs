@@ -25,11 +25,11 @@ impl PSApp {
         // TODO Nicer output if no vulkan capable device
         let instance = {
             let extensions = vulkano_win::required_extensions();
-            Instance::new(None, &extensions, None).expect("failed to create Vulkan instance")
+            Instance::new(None, &extensions, None).expect("Failed to create Vulkan instance")
         };
 
         // Get physical device properties
-        let physical = PhysicalDevice::enumerate(&instance).next().expect("No vulkan compatible device.");
+        let physical = PhysicalDevice::enumerate(&instance).next().expect("No vulkan compatible device");
         Self::print_vk_ques(&physical);
         let queue_family = Self::get_graphics_capable_que_family(&physical);
 
@@ -80,7 +80,7 @@ impl PSApp {
         compute_device
             .queue_families()
             .find(|&q| q.supports_graphics())
-            .expect("couldn't find a graphical queue family")
+            .expect("Couldn't find a graphical queue family")
     }
 
     /// Print vk ques for device to stdout
