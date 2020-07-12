@@ -41,7 +41,7 @@ fn main() {
     };
 
     // Setup vulkan
-    let (events_loop, surface) = util::init_vk_window(&EventLoop::new(), instance.clone());
+    let (events_loop, surface) = util::init_vk_winit_window(&EventLoop::new(), instance.clone());
     let physical = util::get_vk_physical_device(&instance);
     util::print_vk_ques(&physical);
     let queue_family = util::get_graphics_capable_que_family(&physical);

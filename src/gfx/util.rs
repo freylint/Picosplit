@@ -9,7 +9,7 @@ use {
 };
 
 /// Initialize Vulkan capable window
-pub fn init_vk_window(
+pub fn init_vk_winit_window(
     event_loop: &EventLoop<()>,
     instance: Arc<Instance>,
 ) -> (EventLoop<()>, Arc<Surface<Window>>) {
