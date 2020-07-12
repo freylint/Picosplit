@@ -51,17 +51,17 @@ fn main() {
         Device::new(
             physical,
             &Features::none(),
-            &DeviceExtensions::none(),
+            &DeviceExtensions::supported_by_device(physical),
             [(queue_family, 0.5)].iter().cloned(),
         )
-        .expect("failed to create device")
+        .expect("Failed to create device")
     };
 
     // Get Queue to render to
     let queue = queues.next().unwrap();
 
     let shader =
-        shaders::basic_cmp::Shader::load(device.clone()).expect("failed to create shader module");
+        shaders::basic_cmp::Shader::load(device.clone()).expect("Failed to create shader module");
 
     // Create content to buffer.
     let data_iter = 0..65536;
