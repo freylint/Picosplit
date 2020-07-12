@@ -1,7 +1,7 @@
 use {
     std::sync::Arc,
     vulkano::{
-        instance::{Instance, PhysicalDevice, PhysicalDevicesIter, QueueFamily},
+        instance::{Instance, PhysicalDevice, QueueFamily},
         swapchain::Surface,
     },
     vulkano_win::VkSurfaceBuild,
