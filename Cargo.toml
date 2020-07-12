@@ -10,6 +10,10 @@ serde = { version = "1.0", features = ["derive"] }
 toml = "0.5"
 ron = "0.6"
 vulkano = "0.19"
+vulkano-shaders = "0.19"
+vulkano-win = "0.19"
+winit = "0.22"
+
 
 [dependencies.clap]
 version = "2.33"
