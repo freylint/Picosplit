@@ -39,9 +39,9 @@ impl Cfg {
             match Self::write(cfg_path, &config) {
                 // Return config
                 Ok(_count) => Box::new(config),
-                Err(e) => {
+                Err(_msg) => {
                     // Fixme handle as a warning
-                    println!("Failed to write default config.");
+                    println!("WARN Failed to write default config. {}", _msg);
                     Box::new(config)
                 }
             }

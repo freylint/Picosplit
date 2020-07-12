@@ -9,7 +9,7 @@ edition = "2018"
 serde = { version = "1.0", features = ["derive"] }
 toml = "0.5"
 ron = "0.6"
-orbtk = "0.3.1-alpha2"
+vulkano = "0.19"
 
 [dependencies.clap]
 version = "2.33"
