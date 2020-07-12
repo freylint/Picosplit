@@ -21,6 +21,14 @@ pub fn init_vk_window(
     )
 }
 
+/// Get vk device to compute with
+pub fn get_vk_physical_device<'a>(instance: &'a Arc<Instance>) -> PhysicalDevice {
+    PhysicalDevice::enumerate(&instance)
+        .next()
+        .expect("No device available")
+}
+
+/// Print vk ques for device to stdout
 pub fn print_vk_ques(device_list: &PhysicalDevice) {
     for family in device_list.queue_families() {
         println!(

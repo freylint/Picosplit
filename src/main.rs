@@ -7,7 +7,7 @@ mod gfx;
 use {
     cfg::Cfg,
     clap::{load_yaml, App},
-    gfx::{init_vk_window, print_vk_ques},
+    gfx::util,
     std::path::Path,
     vulkano::{
         buffer::{BufferUsage, CpuAccessibleBuffer},
@@ -39,14 +39,10 @@ fn main() {
     };
 
     // Setup vulkan
-    let (events_loop, surface) = init_vk_window(&EventLoop::new(), instance.clone());
+    let (events_loop, surface) = util::init_vk_window(&EventLoop::new(), instance.clone());
+    let physical = util::get_vk_physical_device(&instance);
 
-    // Get vk physical
-    let physical = PhysicalDevice::enumerate(&instance)
-        .next()
-        .expect("No device available");
-
-    print_vk_ques(&physical);
+    util::print_vk_ques(&physical);
 
     // Get que family that supports Graphics
     let queue_family = physical
@@ -96,6 +92,7 @@ fn main() {
         .unwrap();
 
     // Main program loop
+    // TODO handle other winit events
     #[allow(clippy::single_match)]
     events_loop.run(|event, _, control_flow| match event {
         Event::WindowEvent {
