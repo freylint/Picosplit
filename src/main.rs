@@ -8,12 +8,14 @@ use {
     cfg::Cfg,
     clap::{load_yaml, App},
     gfx::{shaders, util},
-    std::path::Path,
+    std::{path::Path, sync::Arc},
     vulkano::{
         buffer::{BufferUsage, CpuAccessibleBuffer},
         command_buffer::{AutoCommandBufferBuilder, CommandBuffer},
+        descriptor::{descriptor_set::PersistentDescriptorSet, PipelineLayoutAbstract},
         device::{Device, DeviceExtensions, Features},
         instance::{Instance, InstanceExtensions, PhysicalDevice},
+        pipeline::ComputePipeline,
         sync::GpuFuture,
     },
     vulkano_win::VkSurfaceBuild,
@@ -67,18 +69,31 @@ fn main() {
         CpuAccessibleBuffer::from_iter(device.clone(), BufferUsage::all(), false, data_iter)
             .expect("failed to create buffer");
 
-    // Create command buffer
+    let compute_pipeline = Arc::new(
+        ComputePipeline::new(device.clone(), &shader.main_entry_point(), &())
+            .expect("failed to create compute pipeline"),
+    );
+
+    let layout = compute_pipeline.layout().descriptor_set_layout(0).unwrap();
+    let set = Arc::new(
+        PersistentDescriptorSet::start(layout.clone())
+            .add_buffer(data_buffer.clone())
+            .unwrap()
+            .build()
+            .unwrap(),
+    );
+
+    // Create compute command
     let mut builder = AutoCommandBufferBuilder::new(device.clone(), queue.family()).unwrap();
 
-    // Copy data into buffer
+    // Build compute command
+    let mut builder = AutoCommandBufferBuilder::new(device.clone(), queue.family()).unwrap();
     builder
-        .copy_buffer(data_buffer.clone(), data_buffer)
+        .dispatch([1024, 1, 1], compute_pipeline.clone(), set.clone(), ())
         .unwrap();
-
-    // Build buffer
     let command_buffer = builder.build().unwrap();
 
-    // Execute command buffer
+    // Wait for command to finish
     let finished = command_buffer.execute(queue.clone()).unwrap();
 
     // Check compute operation completed successfully
@@ -87,6 +102,13 @@ fn main() {
         .unwrap()
         .wait(None)
         .unwrap();
+
+    let content = data_buffer.read().unwrap();
+    for (n, val) in content.iter().enumerate() {
+        assert_eq!(*val, n as u32 * 12);
+    }
+
+    println!("Everything succeeded!");
 
     // Main program loop
     // TODO handle other winit events
