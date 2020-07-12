@@ -7,7 +7,7 @@ mod gfx;
 use {
     cfg::Cfg,
     clap::{load_yaml, App},
-    gfx::util,
+    gfx::{shaders, util},
     std::path::Path,
     vulkano::{
         buffer::{BufferUsage, CpuAccessibleBuffer},
@@ -41,10 +41,7 @@ fn main() {
     // Setup vulkan
     let (events_loop, surface) = util::init_vk_window(&EventLoop::new(), instance.clone());
     let physical = util::get_vk_physical_device(&instance);
-
     util::print_vk_ques(&physical);
-
-    // Get que family that supports Graphics
     let queue_family = util::get_graphics_capable_que_family(&physical);
 
     // Get device and queues to render to
@@ -60,6 +57,9 @@ fn main() {
 
     // Get Queue to render to
     let queue = queues.next().unwrap();
+
+    let shader =
+        shaders::basic_cmp::Shader::load(device.clone()).expect("failed to create shader module");
 
     // Create content to buffer.
     let data_iter = 0..65536;
