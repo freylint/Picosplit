@@ -45,10 +45,7 @@ fn main() {
     util::print_vk_ques(&physical);
 
     // Get que family that supports Graphics
-    let queue_family = physical
-        .queue_families()
-        .find(|&q| q.supports_graphics())
-        .expect("couldn't find a graphical queue family");
+    let queue_family = util::get_graphics_capable_que_family(&physical);
 
     // Get device and queues to render to
     let (device, mut queues) = {

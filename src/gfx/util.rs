@@ -1,7 +1,7 @@
 use {
     std::sync::Arc,
     vulkano::{
-        instance::{Instance, PhysicalDevice, PhysicalDevicesIter},
+        instance::{Instance, PhysicalDevice, PhysicalDevicesIter, QueueFamily},
         swapchain::Surface,
     },
     vulkano_win::VkSurfaceBuild,
@@ -26,6 +26,14 @@ pub fn get_vk_physical_device<'a>(instance: &'a Arc<Instance>) -> PhysicalDevice
     PhysicalDevice::enumerate(&instance)
         .next()
         .expect("No device available")
+}
+
+/// Get vk que capable of drawing graphics
+pub fn get_graphics_capable_que_family<'a>(compute_device: &'a PhysicalDevice) -> QueueFamily<'a> {
+    compute_device
+        .queue_families()
+        .find(|&q| q.supports_graphics())
+        .expect("couldn't find a graphical queue family")
 }
 
 /// Print vk ques for device to stdout
