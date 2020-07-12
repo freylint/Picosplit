@@ -13,16 +13,12 @@ use {
         buffer::{BufferUsage, CpuAccessibleBuffer},
         command_buffer::{AutoCommandBufferBuilder, CommandBuffer},
         descriptor::{descriptor_set::PersistentDescriptorSet, PipelineLayoutAbstract},
-        device::{Device, DeviceExtensions, Features},
-        instance::{Instance, InstanceExtensions, PhysicalDevice},
         pipeline::ComputePipeline,
         sync::GpuFuture,
     },
-    vulkano_win::VkSurfaceBuild,
     winit::{
         event::{Event, WindowEvent},
-        event_loop::{ControlFlow, EventLoop},
-        window::WindowBuilder,
+        event_loop::ControlFlow,
     },
 };
 
@@ -62,7 +58,6 @@ fn main() {
             .build()
             .unwrap(),
     );
-
 
     // Build compute command
     let mut builder = AutoCommandBufferBuilder::new(app.device.clone(), queue.family()).unwrap();

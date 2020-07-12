@@ -3,7 +3,7 @@ use {
     std::sync::Arc,
     vulkano::{
         device::{Device, DeviceExtensions, Features, QueuesIter},
-        instance::{Instance, PhysicalDevice, PhysicalDevicesIter, QueueFamily},
+        instance::{Instance, PhysicalDevice, QueueFamily},
         swapchain::Surface,
     },
     vulkano_win::VkSurfaceBuild,
@@ -29,7 +29,9 @@ impl PSApp {
         };
 
         // Get physical device properties
-        let physical = PhysicalDevice::enumerate(&instance).next().expect("No vulkan compatible device");
+        let physical = PhysicalDevice::enumerate(&instance)
+            .next()
+            .expect("No vulkan compatible device");
         Self::print_vk_ques(&physical);
         let queue_family = Self::get_graphics_capable_que_family(&physical);
 

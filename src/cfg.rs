@@ -24,12 +24,7 @@ pub struct Cfg {
 impl Cfg {
     /// Create Cfg using default values
     pub fn default() -> Self {
-        Self::new(
-            "PicoSplit".to_owned(),
-            400,
-            600,
-            ResolutionMode::Inner,
-        )
+        Self::new("PicoSplit".to_owned(), 400, 600, ResolutionMode::Inner)
     }
 
     pub fn init_cfg(cfg_path: &Path) -> Box<Self> {
