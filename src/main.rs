@@ -31,46 +31,26 @@ fn main() {
     let cli_argfile = load_yaml!("../res/sys/cli.yaml");
     let _matches = App::from(cli_argfile).get_matches();
 
-    let _cfg = Cfg::init_cfg(Path::new("./res/cfg/cfg.toml"));
+    let cfg = Cfg::init_cfg(Path::new("./res/cfg/cfg.toml"));
 
-    // Create Vulkano Instance
-    // TODO Nicer no vulkan output
-    let instance = {
-        let extensions = vulkano_win::required_extensions();
-        Instance::new(None, &extensions, None).expect("failed to create Vulkan instance")
-    };
-
-    // Setup vulkan
-    let (events_loop, surface) = util::init_vk_winit_window(&EventLoop::new(), instance.clone());
-    let physical = util::get_vk_physical_device(&instance);
-    util::print_vk_ques(&physical);
-    let queue_family = util::get_graphics_capable_que_family(&physical);
-
-    // Get device and queues to render to
-    let (device, mut queues) = {
-        Device::new(
-            physical,
-            &Features::none(),
-            &DeviceExtensions::supported_by_device(physical),
-            [(queue_family, 0.5)].iter().cloned(),
-        )
-        .expect("Failed to create device")
-    };
+    // Setup vulkan window
+    let mut app = util::PSApp::init(&cfg);
 
     // Get Queue to render to
-    let queue = queues.next().unwrap();
+    let queue = app.queues.next().unwrap();
 
-    let shader =
-        shaders::basic_cmp::Shader::load(device.clone()).expect("Failed to create shader module");
+    // Load basic compute shader
+    let shader = shaders::basic_cmp::Shader::load(app.device.clone())
+        .expect("Failed to create shader module");
 
-    // Create content to buffer.
+    // Create content to buffer
     let data_iter = 0..65536;
     let data_buffer =
-        CpuAccessibleBuffer::from_iter(device.clone(), BufferUsage::all(), false, data_iter)
+        CpuAccessibleBuffer::from_iter(app.device.clone(), BufferUsage::all(), false, data_iter)
             .expect("failed to create buffer");
 
     let compute_pipeline = Arc::new(
-        ComputePipeline::new(device.clone(), &shader.main_entry_point(), &())
+        ComputePipeline::new(app.device.clone(), &shader.main_entry_point(), &())
             .expect("failed to create compute pipeline"),
     );
 
@@ -83,11 +63,9 @@ fn main() {
             .unwrap(),
     );
 
-    // Create compute command
-    let mut builder = AutoCommandBufferBuilder::new(device.clone(), queue.family()).unwrap();
 
     // Build compute command
-    let mut builder = AutoCommandBufferBuilder::new(device.clone(), queue.family()).unwrap();
+    let mut builder = AutoCommandBufferBuilder::new(app.device.clone(), queue.family()).unwrap();
     builder
         .dispatch([1024, 1, 1], compute_pipeline.clone(), set.clone(), ())
         .unwrap();
@@ -113,7 +91,7 @@ fn main() {
     // Main program loop
     // TODO handle other winit events
     #[allow(clippy::single_match)]
-    events_loop.run(|event, _, control_flow| match event {
+    app.event_loop.run(|event, _, control_flow| match event {
         Event::WindowEvent {
             event: WindowEvent::CloseRequested,
             ..
