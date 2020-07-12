@@ -1,3 +1,4 @@
 title = "PicoSplit"
 width = 400
 height = 600
+resolution_mode = "Inner"

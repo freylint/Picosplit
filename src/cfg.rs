@@ -1,31 +1,35 @@
 //! Module containing logic for application configuration
 
 use {
+    derive_more::Constructor,
     serde::{Deserialize, Serialize},
     std::{fs::File, io::prelude::*, path::Path},
 };
 
-/// Struct containing application configuration data
 #[derive(Debug, Serialize, Deserialize)]
+pub enum ResolutionMode {
+    Inner,
+    Outer,
+}
+
+/// Struct containing application configuration data
+#[derive(Constructor, Debug, Serialize, Deserialize)]
 pub struct Cfg {
     pub title: String,
     pub width: u32,
     pub height: u32,
+    pub resolution_mode: ResolutionMode,
 }
 
 impl Cfg {
-    /// Create Cfg from given data
-    pub fn new(title: &str, width: u32, height: u32) -> Self {
-        Cfg {
-            title: title.to_owned(),
-            width,
-            height,
-        }
-    }
-
     /// Create Cfg using default values
     pub fn default() -> Self {
-        Self::new("PicoSplit", 400, 600)
+        Self::new(
+            "PicoSplit".to_owned(),
+            400,
+            600,
+            ResolutionMode::Inner,
+        )
     }
 
     pub fn init_cfg(cfg_path: &Path) -> Box<Self> {
