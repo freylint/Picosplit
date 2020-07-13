@@ -2,11 +2,11 @@ use {
     crate::cfg::Cfg,
     std::sync::Arc,
     vulkano::{
-        device::{Device, DeviceExtensions, Features, QueuesIter},
+        device::{Device, DeviceCreationError, DeviceExtensions, Features, QueuesIter},
         instance::{Instance, PhysicalDevice, QueueFamily},
         swapchain::Surface,
     },
-    vulkano_win::VkSurfaceBuild,
+    vulkano_win::{VkSurfaceBuild, CreationError},
     winit::{dpi::PhysicalSize, event_loop::EventLoop, window::Window, window::WindowBuilder},
 };
 
@@ -33,12 +33,16 @@ impl PSApp {
             .next()
             .expect("No vulkan compatible device");
         Self::print_vk_ques(&physical);
-        let queue_family = Self::get_graphics_capable_que_family(&physical);
+        let queue_family = Self::get_graphics_capable_que_family(&physical)
+            .expect("Physical device does not have a que capable of drawing graphics");
 
-        let (event_loop, surface) = Self::init_vk_winit_window(instance.clone(), config);
+        let event_loop = EventLoop::new();
+        let surface = Self::init_vk_winit_window(&event_loop, instance.clone(), config)
+            .expect("Failed to create Vulkan capable window");
 
         // Get device and queues to render to
-        let (device, mut queues) = Self::init_render_target(physical, queue_family);
+        let (device, mut queues) = Self::init_render_target(physical, queue_family)
+            .expect("Failed to create vulkan device");
 
         #[allow(clippy::redundant_field_names)]
         PSApp {
@@ -53,36 +57,34 @@ impl PSApp {
     fn init_render_target(
         physical: PhysicalDevice,
         queue_family: QueueFamily,
-    ) -> (Arc<Device>, QueuesIter) {
+    ) -> Result<(Arc<Device>, QueuesIter), DeviceCreationError> {
         Device::new(
             physical,
             &Features::none(),
             &DeviceExtensions::supported_by_device(physical),
             [(queue_family, 0.5)].iter().cloned(),
         )
-        .expect("Failed to create device")
     }
 
     /// Initialize Vulkan capable window
     fn init_vk_winit_window(
+        event_loop: &EventLoop<()>,
         instance: Arc<Instance>,
         config: &Cfg,
-    ) -> (EventLoop<()>, Arc<Surface<Window>>) {
-        let event_loop = EventLoop::new();
-        let window = WindowBuilder::new()
+    ) -> Result<Arc<Surface<Window>>, CreationError> {
+        WindowBuilder::new()
             .with_title(&config.title)
             .with_inner_size(PhysicalSize::new(config.width, config.height))
             .build_vk_surface(&event_loop, instance)
-            .expect("Failed to create Vulkan window");
-        (event_loop, window)
     }
 
     /// Get vk que capable of drawing graphics
-    fn get_graphics_capable_que_family<'a>(compute_device: &'a PhysicalDevice) -> QueueFamily<'a> {
+    fn get_graphics_capable_que_family<'a>(
+        compute_device: &'a PhysicalDevice,
+    ) -> Option<QueueFamily<'a>> {
         compute_device
             .queue_families()
             .find(|&q| q.supports_graphics())
-            .expect("Couldn't find a graphical queue family")
     }
 
     /// Print vk ques for device to stdout
